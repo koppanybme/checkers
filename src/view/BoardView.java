@@ -52,6 +52,9 @@ public class BoardView extends JPanel {
     private void drawPieces() {
         int cellHeight = getHeight() / board.getRows();
         int cellWidth = cellHeight;
+        int pieceSize = (int) (cellWidth * 0.9); // 90% of the cell size
+        int offset = (cellWidth - pieceSize) / 2; // Centering offset
+
         for (int row = 0; row < board.getRows(); row++) {
             for (int col = 0; col < board.getCols(); col++) {
                 Piece piece = board.getPieceAt(row, col);
@@ -62,7 +65,7 @@ public class BoardView extends JPanel {
                         pieceViews[row][col] = pieceView;
                         add(pieceView);
                     }
-                    pieceView.setBounds(col * cellWidth, row * cellHeight, cellWidth, cellHeight);
+                    pieceView.setBounds(col * cellWidth + offset, row * cellHeight + offset, pieceSize, pieceSize);
                     pieceView.setVisible(true);
                 } else if (pieceView != null) {
                     pieceView.setVisible(false);
