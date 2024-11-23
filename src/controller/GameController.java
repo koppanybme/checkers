@@ -3,6 +3,7 @@ package controller;
 import model.Board;
 import model.Piece;
 import view.BoardView;
+import view.MainFrame;
 import view.PieceView;
 
 import java.awt.Color;
@@ -34,13 +35,7 @@ public class GameController {
                 }
             }
         }
-        BoardView boardView = new BoardView(board);
-        // Create a new JFrame to hold the BoardView
-        JFrame frame = new JFrame("Checkers Game");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 400);
-        frame.add(boardView);
-        frame.setVisible(true);
+        MainFrame frame = new MainFrame(new BoardView(board));
     }
 
     public void pieceSelected(PieceView pieceView) {
