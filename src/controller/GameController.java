@@ -89,6 +89,10 @@ public class GameController implements java.io.Serializable, MenuObserver {
              ObjectInputStream in = new ObjectInputStream(fileIn)) {
             model = (GameState) in.readObject();
             view = new GameView(new BoardView(model.getBoard()));
+            view.addObserver(this);
+            model.addObserver(view);
+            addObserver(model);
+            notifyObservers();
             System.out.println("Game state loaded from gameState.ser");            
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
