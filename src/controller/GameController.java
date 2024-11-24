@@ -3,13 +3,14 @@ package controller;
 import model.Board;
 import model.Piece;
 import view.BoardView;
-import view.MainFrame;
+import view.GameView;
 import view.PieceView;
 
 import java.awt.Color;
 
-public class GameController {
+public class GameController implements MenuObserver {
     private PieceView selectedPieceView;
+    private GameView view;
 
     public static void main(String[] args) {
         GameController controller = new GameController();
@@ -34,7 +35,8 @@ public class GameController {
                 }
             }
         }
-        MainFrame frame = new MainFrame(new BoardView(board));
+        GameView frame = new GameView(new BoardView(board));
+        frame.addObserver(this);
     }
 
     public void pieceSelected(PieceView pieceView) {
@@ -45,5 +47,9 @@ public class GameController {
         selectedPieceView = pieceView;
         selectedPieceView.setSelected(true);
         selectedPieceView.repaint();
+    }
+
+    public void onMenuItemClicked(String menuItem) {
+        System.out.println(menuItem + " selected!");
     }
 }

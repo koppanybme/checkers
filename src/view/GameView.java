@@ -5,13 +5,20 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MainFrame extends JFrame {
+import controller.MenuObserver;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class GameView extends JFrame {
+    private List<MenuObserver> observers = new ArrayList<MenuObserver>();
     public JMenu menu;
 
-    public MainFrame(BoardView boardView) {
+    public GameView(BoardView boardView) {
         // Create a new JFrame to hold the BoardView
         JFrame frame = new JFrame("Checkers Game");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -33,28 +40,28 @@ public class MainFrame extends JFrame {
         option1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Option 1 selected!");
+                notifyObservers(option1.getText());
             }
         });
         
         option2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Option 2 selected!");
+                notifyObservers(option2.getText());
             }
         });
         
         option3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Option 3 selected!");
+                notifyObservers(option3.getText());
             }
         });
         
         option4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Option 4 selected!");
+                notifyObservers(option4.getText());
             }
         });
         
@@ -72,5 +79,19 @@ public class MainFrame extends JFrame {
         frame.setJMenuBar(menuBar);
         
         frame.setVisible(true);
+    }
+
+    public void addObserver(MenuObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(MenuObserver observer) {
+        observers.remove(observer);
+    }
+
+    public void notifyObservers(String menuItem) {
+        for (MenuObserver observer : observers) {
+            observer.onMenuItemClicked(menuItem);
+        }
     }
 }
