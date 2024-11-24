@@ -25,11 +25,14 @@ public class GameController implements java.io.Serializable, MenuObserver {
     public void newGame() {
         model = new GameState();
         model.initializeBoard();
-        view = new GameView(new BoardView(model.getBoard()));
-        // Set the observers    
-        view.addObserver(this);
-        model.addObserver(view);
-        addObserver(model);
+        if (view == null) {
+            view = new GameView(new BoardView(model.getBoard()));
+            view.addObserver(this);
+            model.addObserver(view);
+            addObserver(model);
+        } else {            
+            view.updateBoardView(new BoardView(model.getBoard()));
+        }
         notifyObservers();
         model.notifyObservers();
         System.out.println("New game started.");
@@ -88,10 +91,14 @@ public class GameController implements java.io.Serializable, MenuObserver {
         try (FileInputStream fileIn = new FileInputStream("gameState.ser");
              ObjectInputStream in = new ObjectInputStream(fileIn)) {
             model = (GameState) in.readObject();
-            view = new GameView(new BoardView(model.getBoard()));
-            view.addObserver(this);
-            model.addObserver(view);
-            addObserver(model);
+            if (view == null) {
+                view = new GameView(new BoardView(model.getBoard()));
+                view.addObserver(this);
+                model.addObserver(view);
+                addObserver(model);
+            } else {
+                view.updateBoardView(new BoardView(model.getBoard()));
+            }
             notifyObservers();
             System.out.println("Game state loaded from gameState.ser");            
         } catch (IOException | ClassNotFoundException e) {

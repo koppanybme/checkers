@@ -17,6 +17,7 @@ import java.util.List;
 public class GameView extends JFrame implements ModelObserver {
     private List<MenuObserver> observers = new ArrayList<>();
     public JMenu menu;
+    private BoardView boardView;
 
     @Override
     public void updateView() {
@@ -25,11 +26,11 @@ public class GameView extends JFrame implements ModelObserver {
     }
 
     public GameView(BoardView boardView) {
-        // Create a new JFrame to hold the BoardView
-        JFrame frame = new JFrame("Checkers Game");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 400);
-        frame.add(boardView);
+        this.boardView = boardView;
+        setTitle("Checkers Game");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(400, 400);
+        add(boardView);
         
         // Create the menu bar
         JMenuBar menuBar = new JMenuBar();
@@ -73,9 +74,9 @@ public class GameView extends JFrame implements ModelObserver {
         menuBar.add(menu);
         
         // Set the menu bar to the frame
-        frame.setJMenuBar(menuBar);
+        setJMenuBar(menuBar);
         
-        frame.setVisible(true);
+        setVisible(true);
     }
 
     public void addObserver(MenuObserver observer) {
@@ -90,5 +91,13 @@ public class GameView extends JFrame implements ModelObserver {
         for (MenuObserver observer : observers) {
             observer.onMenuItemClicked(menuItem);
         }
+    }
+
+    public void updateBoardView(BoardView newBoardView) {
+        remove(this.boardView);
+        this.boardView = newBoardView;
+        add(this.boardView);
+        revalidate();
+        repaint();
     }
 }
