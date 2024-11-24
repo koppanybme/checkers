@@ -1,18 +1,21 @@
 package model;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
-public class GameState implements java.io.Serializable {
+public class GameState implements java.io.Serializable, ControllerObserver {
+    
     private Board board;
-    private String turn; // "red" or "black"
+    private String turn; // "white" or "black"
     private boolean gameOver;
-    private String winner; // "red", "black", or "draw"
+    private String winner; // "white", "black", or "draw"
 
     public GameState() {
         this.board = new Board(8, 8);
         this.turn = "red";
         this.gameOver = false;
-        this.winner = null;
+        this.winner = null;        
     }
 
     public void initializeBoard() {
@@ -31,6 +34,12 @@ public class GameState implements java.io.Serializable {
                 }
             }
         }
+    }
+
+    @Override
+    public void update() {
+        // Logic to update the model
+        System.out.println("Model updated");
     }
 
     // Getters and setters for the attributes

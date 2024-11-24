@@ -18,6 +18,12 @@ public class GameView extends JFrame {
     private List<MenuObserver> observers = new ArrayList<MenuObserver>();
     public JMenu menu;
 
+    @Override
+    public void dispose() {
+        // Any additional cleanup if necessary
+        super.dispose();
+    }
+
     public GameView(BoardView boardView) {
         // Create a new JFrame to hold the BoardView
         JFrame frame = new JFrame("Checkers Game");
