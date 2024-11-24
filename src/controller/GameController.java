@@ -11,7 +11,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameController implements MenuObserver {
+public class GameController implements java.io.Serializable, MenuObserver {
     private List<ControllerObserver> observers = new ArrayList<>();
     private PieceView selectedPieceView;
     private GameView view;
@@ -26,10 +26,12 @@ public class GameController implements MenuObserver {
         model = new GameState();
         model.initializeBoard();
         view = new GameView(new BoardView(model.getBoard()));
-        observers.clear();        
+        // Set the observers    
         view.addObserver(this);
+        model.addObserver(view);
         addObserver(model);
         notifyObservers();
+        model.notifyObservers();
         System.out.println("New game started.");
     }
 

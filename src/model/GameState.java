@@ -4,12 +4,28 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import view.ModelObserver;
+
 public class GameState implements java.io.Serializable, ControllerObserver {
-    
+    private List<ModelObserver> observers = new ArrayList<ModelObserver>();
     private Board board;
     private String turn; // "white" or "black"
     private boolean gameOver;
     private String winner; // "white", "black", or "draw"
+
+    public void addObserver(ModelObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(ModelObserver observer) {
+        observers.remove(observer);
+    }
+
+    public void notifyObservers() {
+        for (ModelObserver observer : observers) {
+            observer.updateView();
+        }
+    }
 
     public GameState() {
         this.board = new Board(8, 8);

@@ -14,14 +14,14 @@ import controller.MenuObserver;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameView extends JFrame {
-    private List<MenuObserver> observers = new ArrayList<MenuObserver>();
+public class GameView extends JFrame implements ModelObserver {
+    private List<MenuObserver> observers = new ArrayList<>();
     public JMenu menu;
 
     @Override
-    public void dispose() {
-        // Any additional cleanup if necessary
-        super.dispose();
+    public void updateView() {
+        System.out.println("View updated");
+        repaint();
     }
 
     public GameView(BoardView boardView) {
