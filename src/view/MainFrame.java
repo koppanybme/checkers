@@ -5,6 +5,8 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class MainFrame extends JFrame {
     public JMenu menu;
@@ -27,6 +29,34 @@ public class MainFrame extends JFrame {
         JMenuItem option2 = new JMenuItem("Option 2");
         JMenuItem option3 = new JMenuItem("Option 3");
         JMenuItem option4 = new JMenuItem("Option 4");
+
+        option1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Option 1 selected!");
+            }
+        });
+        
+        option2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Option 2 selected!");
+            }
+        });
+        
+        option3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Option 3 selected!");
+            }
+        });
+        
+        option4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Option 4 selected!");
+            }
+        });
         
         // Add menu items to the menu
         menu.add(option1);

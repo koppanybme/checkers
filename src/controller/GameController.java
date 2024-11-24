@@ -7,7 +7,6 @@ import view.MainFrame;
 import view.PieceView;
 
 import java.awt.Color;
-import javax.swing.*;
 
 public class GameController {
     private PieceView selectedPieceView;
