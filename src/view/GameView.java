@@ -16,7 +16,7 @@ import java.util.List;
 
 public class GameView extends JFrame implements ModelObserver {
     private List<MenuObserver> observers = new ArrayList<>();
-    public JMenu menu;
+    private JMenu menu;
     private BoardView boardView;
 
     @Override

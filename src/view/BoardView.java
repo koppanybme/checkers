@@ -4,10 +4,13 @@ import model.Board;
 import model.Piece;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class BoardView extends JPanel {
     private Board board;
     private PieceView[][] pieceViews;
+    private PieceView selectedPieceView;
 
     public BoardView(Board board) {
         this.board = board;
@@ -21,6 +24,12 @@ public class BoardView extends JPanel {
                 if (piece != null) {
                     PieceView pieceView = new PieceView(piece);
                     pieceViews[row][col] = pieceView;
+                    pieceView.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            handlePieceViewSelection(pieceView);
+                        }
+                    });
                     add(pieceView);
                 }
             }
@@ -74,5 +83,14 @@ public class BoardView extends JPanel {
         }
         revalidate();
         repaint();
+    }
+
+    private void handlePieceViewSelection(PieceView pieceView) {
+        if (selectedPieceView != null) {
+            selectedPieceView.setSelected(false); // Deselect the previously selected PieceView
+        }
+        selectedPieceView = pieceView;
+        selectedPieceView.setSelected(true); // Select the new PieceView
+        repaint(); // Repaint the board to reflect the selection change
     }
 }

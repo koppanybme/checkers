@@ -13,7 +13,6 @@ import java.util.List;
 
 public class GameController implements java.io.Serializable, MenuObserver {
     private List<ControllerObserver> observers = new ArrayList<>();
-    private PieceView selectedPieceView;
     private GameView view;
     private GameState model;
 
@@ -36,16 +35,6 @@ public class GameController implements java.io.Serializable, MenuObserver {
         notifyObservers();
         model.notifyObservers();
         System.out.println("New game started.");
-    }
-
-    public void pieceSelected(PieceView pieceView) {
-        if (selectedPieceView != null) {
-            selectedPieceView.setSelected(false);
-            selectedPieceView.repaint();
-        }
-        selectedPieceView = pieceView;
-        selectedPieceView.setSelected(true);
-        selectedPieceView.repaint();
     }
 
     public void addObserver(ControllerObserver observer) {

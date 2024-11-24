@@ -11,21 +11,19 @@ import java.awt.BasicStroke;
 
 public class PieceView extends JButton {
     private Piece piece;
-    private boolean isSelected;
 
     public PieceView(Piece piece) {
         this.piece = piece;
-        this.isSelected = false;
         this.setBorderPainted(false);
         this.setContentAreaFilled(false);
 
-        this.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                isSelected = !isSelected;
-                repaint();
-            }
-        });
+        // this.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(java.awt.event.ActionEvent e) {
+        //         isSelected = !isSelected;
+        //         repaint();
+        //     }
+        // });
     }
 
     public Piece getPiece() {
@@ -55,7 +53,7 @@ public class PieceView extends JButton {
 
     @Override
     protected void paintBorder(Graphics g) {
-        if (isSelected) {
+        if (isSelected()) {
             Graphics2D g2 = (Graphics2D) g;
             g2.setColor(Color.YELLOW);
             g2.setStroke(new BasicStroke(3));
