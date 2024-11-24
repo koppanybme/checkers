@@ -2,7 +2,7 @@ package model;
 
 import java.awt.*;
 
-public class Piece {
+public class Piece implements java.io.Serializable {
     private Color color; // "red" or "black"
     private boolean isQueen;
     private boolean isVisible;

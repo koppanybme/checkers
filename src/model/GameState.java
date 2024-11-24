@@ -1,6 +1,8 @@
 package model;
 
-public class GameState {
+import java.awt.Color;
+
+public class GameState implements java.io.Serializable {
     private Board board;
     private String turn; // "red" or "black"
     private boolean gameOver;
@@ -11,6 +13,24 @@ public class GameState {
         this.turn = "red";
         this.gameOver = false;
         this.winner = null;
+    }
+
+    public void initializeBoard() {
+        // Set the initial pieces on the board
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 8; col++) {
+                if ((row + col) % 2 != 0) {
+                    board.setPieceAt(row, col, new Piece(Color.WHITE, false, true));
+                }
+            }
+        }
+        for (int row = 5; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                if ((row + col) % 2 != 0) {
+                    board.setPieceAt(row, col, new Piece(Color.BLACK, false, true));
+                }
+            }
+        }
     }
 
     // Getters and setters for the attributes

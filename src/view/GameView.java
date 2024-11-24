@@ -32,10 +32,9 @@ public class GameView extends JFrame {
         menu = new JMenu("Options");
         
         // Create menu items
-        JMenuItem option1 = new JMenuItem("Option 1");
-        JMenuItem option2 = new JMenuItem("Option 2");
-        JMenuItem option3 = new JMenuItem("Option 3");
-        JMenuItem option4 = new JMenuItem("Option 4");
+        JMenuItem option1 = new JMenuItem("Save Game");
+        JMenuItem option2 = new JMenuItem("Load Game");
+        JMenuItem option3 = new JMenuItem("New Game");
 
         option1.addActionListener(new ActionListener() {
             @Override
@@ -58,18 +57,10 @@ public class GameView extends JFrame {
             }
         });
         
-        option4.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                notifyObservers(option4.getText());
-            }
-        });
-        
         // Add menu items to the menu
         menu.add(option1);
         menu.add(option2);
         menu.add(option3);
-        menu.add(option4);
         
         // Push menu to the right
         menuBar.add(Box.createHorizontalGlue());

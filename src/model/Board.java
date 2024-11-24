@@ -1,6 +1,6 @@
 package model;
 
-public class Board {
+public class Board implements java.io.Serializable {
     private Piece[][] board;
     private int whitePieces;
     private int blackPieces;

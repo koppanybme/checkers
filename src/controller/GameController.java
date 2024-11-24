@@ -1,42 +1,28 @@
 package controller;
 
-import model.Board;
-import model.Piece;
-import view.BoardView;
-import view.GameView;
-import view.PieceView;
+import model.*;
+import view.*;
 
 import java.awt.Color;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 public class GameController implements MenuObserver {
     private PieceView selectedPieceView;
     private GameView view;
+    private GameState model;
 
     public static void main(String[] args) {
         GameController controller = new GameController();
-        controller.startGame();
+        controller.newGame();
     }
 
-    public void startGame() {
-        // Create a new board with 8 rows and 8 columns
-        Board board = new Board(8, 8);
-        // Set the initial pieces on the board
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 8; col++) {
-                if ((row + col) % 2 != 0) {
-                    board.setPieceAt(row, col, new Piece(Color.WHITE, false, true));
-                }
-            }
-        }
-        for (int row = 5; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                if ((row + col) % 2 != 0) {
-                    board.setPieceAt(row, col, new Piece(Color.BLACK, false, true));
-                }
-            }
-        }
-        GameView frame = new GameView(new BoardView(board));
-        frame.addObserver(this);
+    public void newGame() {
+        model = new GameState();
+        model.initializeBoard();
+        view = new GameView(new BoardView(model.getBoard()));
+        view.addObserver(this);
     }
 
     public void pieceSelected(PieceView pieceView) {
@@ -50,6 +36,27 @@ public class GameController implements MenuObserver {
     }
 
     public void onMenuItemClicked(String menuItem) {
-        System.out.println(menuItem + " selected!");
+        switch (menuItem) {
+            case "Save Game":
+                saveGame();
+                break;
+            case "Load Game":
+                break;
+            case "New Game":
+                newGame();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void saveGame() {
+        try (FileOutputStream fileOut = new FileOutputStream("gameState.ser");
+             ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+            out.writeObject(model);
+            System.out.println("Game state saved to gameState.ser");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
