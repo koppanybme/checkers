@@ -16,14 +16,6 @@ public class PieceView extends JButton {
         this.piece = piece;
         this.setBorderPainted(false);
         this.setContentAreaFilled(false);
-
-        // this.addActionListener(new ActionListener() {
-        //     @Override
-        //     public void actionPerformed(java.awt.event.ActionEvent e) {
-        //         isSelected = !isSelected;
-        //         repaint();
-        //     }
-        // });
     }
 
     public Piece getPiece() {

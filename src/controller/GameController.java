@@ -11,7 +11,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameController implements java.io.Serializable, MenuObserver {
+public class GameController implements java.io.Serializable, MenuObserver, PieceObserver {
     private List<ControllerObserver> observers = new ArrayList<>();
     private GameView view;
     private GameState model;
@@ -64,6 +64,11 @@ public class GameController implements java.io.Serializable, MenuObserver {
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onPieceClicked(int row, int col) {
+        System.out.println("Piece clicked at row " + row + ", col " + col);
     }
 
     public void saveGame() {

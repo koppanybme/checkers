@@ -2,6 +2,7 @@ package view;
 
 import model.Board;
 import model.Piece;
+import controller.PieceObserver;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -11,6 +12,8 @@ public class BoardView extends JPanel {
     private Board board;
     private PieceView[][] pieceViews;
     private PieceView selectedPieceView;
+    private int selectedRow;
+    private int selectedCol;
 
     public BoardView(Board board) {
         this.board = board;
@@ -26,8 +29,8 @@ public class BoardView extends JPanel {
                     pieceViews[row][col] = pieceView;
                     pieceView.addMouseListener(new MouseAdapter() {
                         @Override
-                        public void mouseClicked(MouseEvent e) {
-                            handlePieceViewSelection(pieceView);
+                        public void mouseClicked(MouseEvent e) {                            
+                            handlePieceViewSelection(pieceView);                            
                         }
                     });
                     add(pieceView);
@@ -91,6 +94,9 @@ public class BoardView extends JPanel {
         }
         selectedPieceView = pieceView;
         selectedPieceView.setSelected(true); // Select the new PieceView
+        selectedRow = (selectedPieceView.getY() / selectedPieceView.getHeight());
+        selectedCol = (selectedPieceView.getX() / selectedPieceView.getWidth());
+        System.out.println("Piece selected at row " + selectedRow + ", col " + selectedCol);
         repaint(); // Repaint the board to reflect the selection change
     }
 }
