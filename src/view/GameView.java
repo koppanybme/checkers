@@ -93,6 +93,10 @@ public class GameView extends JFrame implements ModelObserver {
         }
     }
 
+    public BoardView getBoardView() {
+        return boardView;
+    }
+
     public void updateBoardView(BoardView newBoardView) {
         remove(this.boardView);
         this.boardView = newBoardView;

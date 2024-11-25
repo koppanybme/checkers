@@ -7,13 +7,30 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BoardView extends JPanel {
+    private List<PieceObserver> observers = new ArrayList<>();
     private Board board;
     private PieceView[][] pieceViews;
     private PieceView selectedPieceView;
     private int selectedRow;
     private int selectedCol;
+
+    public void addObserver(PieceObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(PieceObserver observer) {
+        observers.remove(observer);
+    }
+
+    public void notifyObservers(int row, int col) {
+        for (PieceObserver observer : observers) {
+            observer.onPieceClicked(row, col);
+        }
+    }
 
     public BoardView(Board board) {
         this.board = board;
@@ -95,8 +112,8 @@ public class BoardView extends JPanel {
         selectedPieceView = pieceView;
         selectedPieceView.setSelected(true); // Select the new PieceView
         selectedRow = (selectedPieceView.getY() / selectedPieceView.getHeight());
-        selectedCol = (selectedPieceView.getX() / selectedPieceView.getWidth());
-        System.out.println("Piece selected at row " + selectedRow + ", col " + selectedCol);
+        selectedCol = (selectedPieceView.getX() / selectedPieceView.getWidth());        
+        notifyObservers(selectedRow, selectedCol);
         repaint(); // Repaint the board to reflect the selection change
     }
 }

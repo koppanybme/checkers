@@ -28,6 +28,7 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             view = new GameView(new BoardView(model.getBoard()));
             view.addObserver(this);
             model.addObserver(view);
+            view.getBoardView().addObserver(this);
             addObserver(model);
         } else {            
             view.updateBoardView(new BoardView(model.getBoard()));
