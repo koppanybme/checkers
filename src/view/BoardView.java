@@ -10,7 +10,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BoardView extends JPanel {
+public class BoardView extends JPanel implements ModelObserver {
     private List<PieceObserver> observers = new ArrayList<>();
     private List<Point> legalMoves = new ArrayList<>();
     private Board board;
@@ -37,6 +37,12 @@ public class BoardView extends JPanel {
         for (PieceObserver observer : observers) {
             observer.onPieceMoved(from, to);
         }
+    }
+
+    @Override
+    public void updateView() {
+        System.out.println("BoardView updated");
+        repaint();
     }
 
     public BoardView(Board board) {
@@ -163,5 +169,12 @@ public class BoardView extends JPanel {
             System.out.println("Legal move clicked at: " + clickedPoint);
             notifyObserversPieceMoved(new Point(selectedRow, selectedCol), clickedPoint);
         }
+    }
+
+    public void updatePieceView(Point from, Point to, Piece piece) {
+        pieceViews[to.x][to.y] = pieceViews[from.x][from.y];
+        pieceViews[from.x][from.y] = null;
+        revalidate();
+        repaint();
     }
 }

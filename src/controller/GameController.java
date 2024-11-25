@@ -35,6 +35,7 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             observer.update();
         }
     }
+    
     public void onMenuItemClicked(String menuItem) {
         switch (menuItem) {
             case "Save Game":
@@ -145,6 +146,7 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         Piece p = b.getPieceAt(from.x, from.y);
         b.setPieceAt(from.x, from.y, null);
         b.setPieceAt(to.x, to.y, p);
+        view.getBoardView().updatePieceView(from, to, p);
         view.getBoardView().updateLegalMoves(new ArrayList<>());
         notifyObservers();
     }
@@ -172,6 +174,7 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
                 view.updateBoardView(new BoardView(model.getBoard()));
             }
             view.getBoardView().addObserver(this);
+            model.addObserver(view.getBoardView());
             notifyObservers();
             System.out.println("Game state loaded from gameState.ser");            
         } catch (IOException | ClassNotFoundException e) {
@@ -191,6 +194,7 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             view.updateBoardView(new BoardView(model.getBoard()));
         }
         view.getBoardView().addObserver(this);
+        model.addObserver(view.getBoardView());
         notifyObservers();
         model.notifyObservers();
         System.out.println("New game started.");

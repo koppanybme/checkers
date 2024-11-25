@@ -24,6 +24,7 @@ public class GameView extends JFrame implements ModelObserver {
     public void updateView() {
         System.out.println("View updated");
         repaint();
+        boardView.repaint();
     }
 
     public GameView(BoardView boardView) {
