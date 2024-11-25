@@ -6,6 +6,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -29,7 +30,7 @@ public class GameView extends JFrame implements ModelObserver {
         this.boardView = boardView;
         setTitle("Checkers Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 400);
+        setMinimumSize(new Dimension(800, 800));
         add(boardView);
         
         // Create the menu bar

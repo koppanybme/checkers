@@ -56,6 +56,7 @@ public class GameState implements java.io.Serializable, ControllerObserver {
     public void update() {
         // Logic to update the model
         System.out.println("Model updated");
+        notifyObservers();
     }
 
     // Getters and setters for the attributes
