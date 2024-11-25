@@ -15,7 +15,7 @@ public class Board implements java.io.Serializable {
         this.cols = cols;
     }
 
-    public Piece getPieceAt(int row, int col) {
+    public Piece getPieceAt(int row, int col) throws ArrayIndexOutOfBoundsException {
         return board[row][col];
     }
 

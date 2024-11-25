@@ -3,7 +3,7 @@ package controller;
 import model.*;
 import view.*;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -56,8 +56,85 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         System.out.println("Piece clicked at row " + row + ", col " + col);
         Board b = model.getBoard();
         Piece p = b.getPieceAt(row, col);
+        List<Point> legalMoves = new ArrayList<>();
         if (p != null) {
-            System.out.println(p);
+            if(p.isQueen()){
+                System.out.println("Queen piece clicked");
+            } else{
+                System.out.println("Regular piece clicked");
+                //check if a single step is possible
+                try {
+                    if (b.getPieceAt(row + 1, col + 1) == null) {
+                        legalMoves.add(new Point(row + 1, col + 1));
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.out.println("Can't step off the board");
+                }
+                try {
+                    if (b.getPieceAt(row + 1, col - 1) == null) {
+                        legalMoves.add(new Point(row + 1, col - 1));
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.out.println("Can't step off the board");
+                }
+                try {
+                    if (b.getPieceAt(row - 1, col - 1) == null) {
+                        legalMoves.add(new Point(row - 1, col - 1));
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.out.println("Can't step off the board");
+                }
+                try {
+                    if (b.getPieceAt(row - 1, col + 1) == null) {
+                        legalMoves.add(new Point(row - 1, col + 1));
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.out.println("Can't step off the board");
+                }
+                //check if a jump is possible                
+                try {
+                    Piece neighbor = b.getPieceAt(row + 1, col + 1);
+                    Piece jump = b.getPieceAt(row + 2, col + 2);
+                    //check if the neighbor is an opponent and the jump is empty
+                    if (neighbor != null && jump == null && !neighbor.getColor().equals(p.getColor())) {
+                        legalMoves.add(new Point(row + 2, col + 2));
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.out.println("Can't jump off the board");
+                }
+                try {
+                    Piece neighbor = b.getPieceAt(row + 1, col - 1);
+                    Piece jump = b.getPieceAt(row + 2, col - 2);
+                    //check if the neighbor is an opponent and the jump is empty
+                    if (neighbor != null && jump == null && !neighbor.getColor().equals(p.getColor())) {
+                        legalMoves.add(new Point(row + 2, col - 2));
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.out.println("Can't jump off the board");
+                }
+                try {
+                    Piece neighbor = b.getPieceAt(row - 1, col - 1);
+                    Piece jump = b.getPieceAt(row - 2, col - 2);
+                    //check if the neighbor is an opponent and the jump is empty
+                    if (neighbor != null && jump == null && !neighbor.getColor().equals(p.getColor())) {
+                        legalMoves.add(new Point(row - 2, col - 2));
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.out.println("Can't jump off the board");
+                }
+                try {
+                    Piece neighbor = b.getPieceAt(row - 1, col + 1);
+                    Piece jump = b.getPieceAt(row - 2, col + 2);
+                    //check if the neighbor is an opponent and the jump is empty
+                    if (neighbor != null && jump == null && !neighbor.getColor().equals(p.getColor())) {
+                        legalMoves.add(new Point(row - 2, col + 2));
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.out.println("Can't jump off the board");
+                }                
+                System.out.println("Legal moves: " + legalMoves);
+                view.getBoardView().updateLegalMoves(legalMoves);
+            }
         }
     }
 

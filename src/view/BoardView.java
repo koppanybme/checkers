@@ -12,6 +12,7 @@ import java.util.List;
 
 public class BoardView extends JPanel {
     private List<PieceObserver> observers = new ArrayList<>();
+    private List<Point> legalMoves = new ArrayList<>();
     private Board board;
     private PieceView[][] pieceViews;
     private PieceView selectedPieceView;
@@ -56,11 +57,31 @@ public class BoardView extends JPanel {
         }
     }
 
+    public void updateLegalMoves(List<Point> legalMoves) {
+        this.legalMoves = legalMoves;
+        repaint(); // Repaint the board to reflect the new legal moves
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawBoard(g);
         drawPieces();
+        drawLegalMoves(g);
+    }
+
+    private void drawLegalMoves(Graphics g) {
+        int cellHeight = getHeight() / board.getRows();
+        int cellWidth = cellHeight;
+        int pieceSize = (int) (cellWidth * 0.9); // 90% of the cell size
+        int offset = (cellWidth - pieceSize) / 2; // Centering offset
+
+        for (Point point : legalMoves) {
+            int row = point.x;
+            int col = point.y;
+            g.setColor(new Color(255, 255, 0, 100)); // Transparent green
+            g.fillOval(col * cellWidth + offset, row * cellHeight + offset, pieceSize, pieceSize);
+        }
     }
 
     private void drawBoard(Graphics g) {
