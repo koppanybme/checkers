@@ -138,6 +138,17 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         }
     }
 
+    @Override
+    public void onPieceMoved(Point from, Point to) {
+        System.out.println("Piece moved from " + from + " to " + to);
+        Board b = model.getBoard();
+        Piece p = b.getPieceAt(from.x, from.y);
+        b.setPieceAt(from.x, from.y, null);
+        b.setPieceAt(to.x, to.y, p);
+        view.getBoardView().updateLegalMoves(new ArrayList<>());
+        notifyObservers();
+    }
+
     public void saveGame() {
         try (FileOutputStream fileOut = new FileOutputStream("gameState.ser");
              ObjectOutputStream out = new ObjectOutputStream(fileOut)) {

@@ -33,6 +33,12 @@ public class BoardView extends JPanel {
         }
     }
 
+    public void notifyObserversPieceMoved(Point from, Point to) {
+        for (PieceObserver observer : observers) {
+            observer.onPieceMoved(from, to);
+        }
+    }
+
     public BoardView(Board board) {
         this.board = board;
         this.pieceViews = new PieceView[board.getRows()][board.getCols()];
@@ -55,6 +61,13 @@ public class BoardView extends JPanel {
                 }
             }
         }
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                handleMouseClick(e);
+            }
+        });
     }
 
     public void updateLegalMoves(List<Point> legalMoves) {
@@ -79,7 +92,7 @@ public class BoardView extends JPanel {
         for (Point point : legalMoves) {
             int row = point.x;
             int col = point.y;
-            g.setColor(new Color(255, 255, 0, 100)); // Transparent green
+            g.setColor(new Color(255, 255, 0, 100)); // Transparent yellow
             g.fillOval(col * cellWidth + offset, row * cellHeight + offset, pieceSize, pieceSize);
         }
     }
@@ -136,5 +149,19 @@ public class BoardView extends JPanel {
         selectedCol = (selectedPieceView.getX() / selectedPieceView.getWidth());        
         notifyObservers(selectedRow, selectedCol);
         repaint(); // Repaint the board to reflect the selection change
+    }
+
+    private void handleMouseClick(MouseEvent e) {
+        int cellHeight = getHeight() / board.getRows();
+        int cellWidth = cellHeight;
+        int col = e.getX() / cellWidth;
+        int row = e.getY() / cellHeight;
+
+        Point clickedPoint = new Point(row, col);
+        if (legalMoves.contains(clickedPoint)) {
+            // Handle the legal move click
+            System.out.println("Legal move clicked at: " + clickedPoint);
+            notifyObserversPieceMoved(new Point(selectedRow, selectedCol), clickedPoint);
+        }
     }
 }
