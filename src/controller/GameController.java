@@ -3,6 +3,7 @@ package controller;
 import model.*;
 import view.*;
 
+import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,23 +20,6 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
     public static void main(String[] args) {
         GameController controller = new GameController();
         controller.newGame();
-    }
-
-    public void newGame() {
-        model = new GameState();
-        model.initializeBoard();
-        if (view == null) {
-            view = new GameView(new BoardView(model.getBoard()));
-            view.addObserver(this);
-            model.addObserver(view);
-            view.getBoardView().addObserver(this);
-            addObserver(model);
-        } else {            
-            view.updateBoardView(new BoardView(model.getBoard()));
-        }
-        notifyObservers();
-        model.notifyObservers();
-        System.out.println("New game started.");
     }
 
     public void addObserver(ControllerObserver observer) {
@@ -70,6 +54,11 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
     @Override
     public void onPieceClicked(int row, int col) {
         System.out.println("Piece clicked at row " + row + ", col " + col);
+        Board b = model.getBoard();
+        Piece p = b.getPieceAt(row, col);
+        if (p != null) {
+            System.out.println(p);
+        }
     }
 
     public void saveGame() {
@@ -90,14 +79,32 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
                 view = new GameView(new BoardView(model.getBoard()));
                 view.addObserver(this);
                 model.addObserver(view);
-                addObserver(model);
+                addObserver(model);                
             } else {
                 view.updateBoardView(new BoardView(model.getBoard()));
             }
+            view.getBoardView().addObserver(this);
             notifyObservers();
             System.out.println("Game state loaded from gameState.ser");            
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public void newGame() {
+        model = new GameState();
+        model.initializeBoard();
+        if (view == null) {
+            view = new GameView(new BoardView(model.getBoard()));
+            view.addObserver(this);
+            model.addObserver(view);
+            addObserver(model);
+        } else {            
+            view.updateBoardView(new BoardView(model.getBoard()));
+        }
+        view.getBoardView().addObserver(this);
+        notifyObservers();
+        model.notifyObservers();
+        System.out.println("New game started.");
     }
 }
