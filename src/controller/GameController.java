@@ -153,11 +153,23 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         System.out.println("Piece moved from " + from + " to " + to);
         Board b = model.getBoard();
         Piece p = b.getPieceAt(from.x, from.y);
+        boolean jumped = false;
+        if(Math.abs(from.x-to.x) == 2 || Math.abs(from.y-to.y) == 2){
+            jumped = true;
+            System.out.println("Jumped");
+        }
+        if(jumped){
+            //Calculate opponent's piece to be removed
+            int jumpedRow = (from.x + to.x) / 2;
+            int jumpedCol = (from.y + to.y) / 2;
+            b.setPieceAt(jumpedRow, jumpedCol, null);            
+        }
         b.setPieceAt(from.x, from.y, null);
         b.setPieceAt(to.x, to.y, p);
         view.getBoardView().updatePieceView(from, to, p);
         view.getBoardView().updateLegalMoves(new ArrayList<>());
         notifyObservers();
+        model.setTurn(model.getTurn().equals("white") ? "black" : "white");
     }
 
     public void saveGame() {
