@@ -29,7 +29,7 @@ public class GameState implements java.io.Serializable, ControllerObserver {
 
     public GameState() {
         this.board = new Board(8, 8);
-        this.turn = "red";
+        this.turn = "white";
         this.gameOver = false;
         this.winner = null;        
     }

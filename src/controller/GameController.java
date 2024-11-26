@@ -58,6 +58,15 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         Board b = model.getBoard();
         Piece p = b.getPieceAt(row, col);
         List<Point> legalMoves = new ArrayList<>();
+        if(
+            //Check if user's own piece
+            p.getColor().equals(Color.WHITE) && model.getTurn().equals("white") ||
+            p.getColor().equals(Color.BLACK) && model.getTurn().equals("black")
+        ) {
+        } else {
+            System.out.println("Selected " + p.getColor() + " but was " + model.getTurn() + "'s turn");
+            return;
+        }
         if (p != null) {
             if(p.isQueen()){
                 System.out.println("Queen piece clicked");
