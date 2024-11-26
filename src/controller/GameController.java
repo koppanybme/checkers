@@ -57,7 +57,6 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         System.out.println("Piece clicked at row " + row + ", col " + col);
         Board b = model.getBoard();
         Piece p = b.getPieceAt(row, col);
-        List<Point> legalMoves = new ArrayList<>();
         if(
             //Check if user's own piece
             p.getColor().equals(Color.WHITE) && model.getTurn().equals("white") ||
@@ -67,6 +66,12 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             System.out.println("Selected " + p.getColor() + " but was " + model.getTurn() + "'s turn");
             return;
         }
+        List<Point> legalMoves = getLegalMoves(b, p, row, col);
+        view.getBoardView().updateLegalMoves(legalMoves);
+    }
+
+    public List<Point> getLegalMoves(Board b, Piece p, int row, int col){
+        List<Point> legalMoves = new ArrayList<>();
         if (p != null) {
             if(p.isQueen()){
                 System.out.println("Queen piece clicked");
@@ -143,9 +148,9 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
                     System.out.println("Can't jump off the board");
                 }                
                 System.out.println("Legal moves: " + legalMoves);
-                view.getBoardView().updateLegalMoves(legalMoves);
             }
         }
+        return legalMoves;
     }
 
     @Override
