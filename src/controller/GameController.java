@@ -16,6 +16,7 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
     private List<ControllerObserver> observers = new ArrayList<>();
     private GameView view;
     private GameState model;
+    private boolean jumpedFlag;
 
     public static void main(String[] args) {
         GameController controller = new GameController();
@@ -62,8 +63,11 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             p.getColor().equals(Color.WHITE) && model.getTurn().equals("white") ||
             p.getColor().equals(Color.BLACK) && model.getTurn().equals("black")
         ) {
+
         } else {
             System.out.println("Selected " + p.getColor() + " but was " + model.getTurn() + "'s turn");
+            view.getBoardView().getSelectedPieceView().setSelected(false);
+            notifyObservers();
             return;
         }
         List<Point> legalMoves = getLegalMoves(b, p, row, col);
@@ -154,27 +158,36 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
     }
 
     @Override
-    public void onPieceMoved(Point from, Point to) {
+    public void onPieceToMove(Point from, Point to) {        
         System.out.println("Piece moved from " + from + " to " + to);
         Board b = model.getBoard();
         Piece p = b.getPieceAt(from.x, from.y);
-        boolean jumped = false;
+        if(!(
+            p.getColor().equals(Color.WHITE) && model.getTurn().equals("white") ||
+            p.getColor().equals(Color.BLACK) && model.getTurn().equals("black")
+        )){
+            System.out.println("Invalid move");
+            return;
+        }
+        jumpedFlag = false;
         if(Math.abs(from.x-to.x) == 2 || Math.abs(from.y-to.y) == 2){
-            jumped = true;
+            jumpedFlag = true;
             System.out.println("Jumped");
         }
-        if(jumped){
+        if(jumpedFlag){
             //Calculate opponent's piece to be removed
             int jumpedRow = (from.x + to.x) / 2;
             int jumpedCol = (from.y + to.y) / 2;
-            b.setPieceAt(jumpedRow, jumpedCol, null);            
+            b.setPieceAt(jumpedRow, jumpedCol, null);        
         }
         b.setPieceAt(from.x, from.y, null);
         b.setPieceAt(to.x, to.y, p);
         view.getBoardView().updatePieceView(from, to, p);
         view.getBoardView().updateLegalMoves(new ArrayList<>());
         notifyObservers();
-        model.setTurn(model.getTurn().equals("white") ? "black" : "white");
+        if(!jumpedFlag){
+            model.setTurn(model.getTurn().equals("white") ? "black" : "white");
+        }
     }
 
     public void saveGame() {

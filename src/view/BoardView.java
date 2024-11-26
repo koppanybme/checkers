@@ -16,6 +16,15 @@ public class BoardView extends JPanel implements ModelObserver {
     private Board board;
     private PieceView[][] pieceViews;
     private PieceView selectedPieceView;
+    
+    public PieceView getSelectedPieceView() {
+        return selectedPieceView;
+    }
+
+    public void setSelectedPieceView(PieceView selectedPieceView) {
+        this.selectedPieceView = selectedPieceView;
+    }
+
     private int selectedRow;
     private int selectedCol;
 
@@ -33,9 +42,9 @@ public class BoardView extends JPanel implements ModelObserver {
         }
     }
 
-    public void notifyObserversPieceMoved(Point from, Point to) {
+    public void notifyObserversPieceToMove(Point from, Point to) {
         for (PieceObserver observer : observers) {
-            observer.onPieceMoved(from, to);
+            observer.onPieceToMove(from, to);
         }
     }
 
@@ -166,8 +175,8 @@ public class BoardView extends JPanel implements ModelObserver {
         Point clickedPoint = new Point(row, col);
         if (legalMoves.contains(clickedPoint)) {
             // Handle the legal move click
-            System.out.println("Legal move clicked at: " + clickedPoint);
-            notifyObserversPieceMoved(new Point(selectedRow, selectedCol), clickedPoint);
+            System.out.println("Legal move clicked at: " + clickedPoint);            
+            notifyObserversPieceToMove(new Point(selectedRow, selectedCol), clickedPoint);
         }
     }
 
