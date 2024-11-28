@@ -16,7 +16,29 @@ public class BoardView extends JPanel implements ModelObserver {
     private Board board;
     private PieceView[][] pieceViews;
     private PieceView selectedPieceView;
+    private int selectedRow;
+    private int selectedCol;
     
+    public int getSelectedRow() {
+        return selectedRow;
+    }
+
+    public void setSelectedRow(int selectedRow) {
+        this.selectedRow = selectedRow;
+    }
+
+    public int getSelectedCol() {
+        return selectedCol;
+    }
+
+    public void setSelectedCol(int selectedCol) {
+        this.selectedCol = selectedCol;
+    }
+
+    public PieceView getPieceViewAt(int row, int col) {
+        return pieceViews[row][col];
+    }
+
     public PieceView getSelectedPieceView() {
         return selectedPieceView;
     }
@@ -24,9 +46,6 @@ public class BoardView extends JPanel implements ModelObserver {
     public void setSelectedPieceView(PieceView selectedPieceView) {
         this.selectedPieceView = selectedPieceView;
     }
-
-    private int selectedRow;
-    private int selectedCol;
 
     public void addObserver(PieceObserver observer) {
         observers.add(observer);
@@ -36,7 +55,7 @@ public class BoardView extends JPanel implements ModelObserver {
         observers.remove(observer);
     }
 
-    public void notifyObservers(int row, int col) {
+    public void notifyObserversPieceClicked(int row, int col) {
         for (PieceObserver observer : observers) {
             observer.onPieceClicked(row, col);
         }
@@ -76,7 +95,7 @@ public class BoardView extends JPanel implements ModelObserver {
                 }
             }
         }
-
+        
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -162,8 +181,8 @@ public class BoardView extends JPanel implements ModelObserver {
         selectedPieceView.setSelected(true); // Select the new PieceView
         selectedRow = (selectedPieceView.getY() / selectedPieceView.getHeight());
         selectedCol = (selectedPieceView.getX() / selectedPieceView.getWidth());        
-        notifyObservers(selectedRow, selectedCol);
-        repaint(); // Repaint the board to reflect the selection change
+        notifyObserversPieceClicked(selectedRow, selectedCol);
+        //repaint(); // Repaint the board to reflect the selection change
     }
 
     private void handleMouseClick(MouseEvent e) {
