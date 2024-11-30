@@ -3,28 +3,17 @@ package model;
 import java.awt.*;
 
 public class Piece implements java.io.Serializable {
-    private Color color; // "red" or "black"
+    private Color color; // "white" or "black"
     private boolean isQueen;
-    private boolean isVisible;
 
-    public boolean isVisible() {
-        return isVisible;
-    }
-
-    public void setVisible(boolean isVisible) {
-        this.isVisible = isVisible;
-    }
-
-    public Piece(Color color, boolean isQueen, boolean isVisible) {
+    public Piece(Color color, boolean isQueen) {
         this.color = color;
-        this.isQueen = false;
-        this.isVisible = isVisible;
+        this.isQueen = isQueen;
     }
 
     public Piece() {
         this.color = null;
         this.isQueen = false;
-        this.isVisible = false;
     }
 
     // Getters and setters for the attributes
