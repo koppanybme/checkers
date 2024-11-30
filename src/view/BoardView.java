@@ -199,9 +199,12 @@ public class BoardView extends JPanel implements ModelObserver {
         }
     }
 
-    public void updatePieceView(Point from, Point to, Piece piece) {
+    public void updatePieceViewAt(Point from, Point to, Piece piece) {
         pieceViews[to.x][to.y] = pieceViews[from.x][from.y];
         pieceViews[from.x][from.y] = null;
+        selectedPieceView = pieceViews[to.x][to.y];
+        selectedRow = to.x;
+        selectedCol = to.y;
         revalidate();
         repaint();
     }

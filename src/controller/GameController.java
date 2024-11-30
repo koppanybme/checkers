@@ -18,8 +18,10 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
     private GameView view;
     private GameState model;
     private boolean previouslyJumped = false;
-    private boolean isFirstMove = false;
+    private boolean isFirstMove = true;
     private PieceView boundPieceView;
+    private int boundRow;
+    private int boundCol;
 
     public static void main(String[] args) {
         GameController controller = new GameController();
@@ -62,7 +64,7 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         Board b = model.getBoard();
         Piece p = b.getPieceAt(row, col);
         BoardView bw = view.getBoardView();
-        boolean shouldPlayerJump = canPlayerJump();        
+        boolean shouldPlayerJump = canPlayerJump();
         if(
             //Check if user's own piece
             p.getColor().equals(Color.WHITE) && model.getTurn().equals("white") ||
@@ -70,8 +72,13 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         ) {
             List<Point> legalMoves = new ArrayList<>();
             legalMoves = getLegalMoves(b, p, row, col);
-            if(shouldPlayerJump){                
-                legalMoves.removeIf(move -> Math.abs(move.x - row) != 2 || Math.abs(move.y - col) != 2);
+            if(isFirstMove){                
+                if(shouldPlayerJump){                
+                    legalMoves.removeIf(move -> Math.abs(move.x - row) != 2 || Math.abs(move.y - col) != 2);
+                }      
+            } else {
+                //If not first move, can only jump with bound piece
+                legalMoves.removeIf(move -> Math.abs(move.x - boundRow) != 2 || Math.abs(move.y - boundCol) != 2);
             }
             bw.updateLegalMoves(legalMoves);            
             notifyObservers();
@@ -207,6 +214,7 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         Board b = model.getBoard();
         Piece p = b.getPieceAt(from.x, from.y);
         BoardView bw = view.getBoardView();
+        /*
         if(p == null){
             p = bw.getSelectedPieceView().getPiece();;
             bw.getSelectedPieceView().setSelected(true);
@@ -214,6 +222,7 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             bw.setSelectedCol(to.y);
             bw.updateView();
         }
+        */
         if(!(
             p.getColor().equals(Color.WHITE) && model.getTurn().equals("white") ||
             p.getColor().equals(Color.BLACK) && model.getTurn().equals("black")
@@ -221,51 +230,35 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             System.out.println("Invalid move");
             return;
         }
-        if(isFirstMove){
-            boundPieceView = bw.getPieceViewAt(from.x, from.y);
-            List<Point> jumpMoves = getLegalMoves(b, p, to.x, to.y);        
-            jumpMoves.removeIf(move -> Math.abs(move.x - to.x) != 2 || Math.abs(move.y - to.y) != 2);
-            bw.updateLegalMoves(jumpMoves);            
-        }        
-        // Remove moves that aren't jumps
-        List<Point> jumpMoves = getLegalMoves(b, p, to.x, to.y);        
-        jumpMoves.removeIf(move -> Math.abs(move.x - to.x) != 2 || Math.abs(move.y - to.y) != 2);
-        bw.updateLegalMoves(jumpMoves);
-        if(Math.abs(from.x-to.x) == 2 || Math.abs(from.y-to.y) == 2){
-            //Calculate opponent's piece to be removed
-            int jumpedRow = (from.x + to.x) / 2;
-            int jumpedCol = (from.y + to.y) / 2;
-            b.setPieceAt(jumpedRow, jumpedCol, null);
-            previouslyJumped = true;
-        }
         //Remove piece from previous position
         b.setPieceAt(from.x, from.y, null);
         //Put piece at new position
         b.setPieceAt(to.x, to.y, p);
-        bw.updatePieceView(from, to, p);
+        bw.updatePieceViewAt(from, to, p);
+        //If it's a jump, remove the opponent's piece
+        if(Math.abs(to.x - from.x) == 2 ||Math.abs(to.y - from.y) == 2){
+            b.setPieceAt((to.x + from.x)/2, (to.y + from.y)/2, null);
+            boundPieceView = bw.getSelectedPieceView();    
+            previouslyJumped = true;        
+        }
+        boundPieceView = bw.getPieceViewAt(to.x, to.y);
+        bw.setSelectedPieceView(boundPieceView);
+        boundRow = to.x;
+        boundCol = to.y;
         // bw.getPieceViewAt(to.x, to.y).setSelected(true);
-        // bw.setSelectedRow(to.x);
+        // bw.setSelectedRow(3to.x);
         // bw.setSelectedCol(to.y);
         notifyObservers();
         System.out.println("Piece moved from " + from + " to " + to);
-        /*
-        List<Point> jumpMoves = getLegalMoves(b, p, to.x, to.y);
-        //Remove moves that aren't jumps
-        jumpMoves.removeIf(move -> Math.abs(move.x - to.x) != 2 || Math.abs(move.y - to.y) != 2);
-        bw.updateLegalMoves(jumpMoves);
-        if(!jumpedFlag || jumpMoves.isEmpty()){
-            //If the piece didn't jump or no remaining jumps
+        List<Point> legalMoves = getLegalMoves(b, p, boundRow, boundCol);
+        legalMoves.removeIf(move -> Math.abs(move.x - boundRow) != 2 || Math.abs(move.y - boundCol) != 2);
+        bw.updateLegalMoves(legalMoves);
+        if(legalMoves.isEmpty() || !previouslyJumped){
             bw.updateLegalMoves(new ArrayList<>());
             model.setTurn(model.getTurn().equals("white") ? "black" : "white");
-        } else {
-            System.out.println("Piece can still jump");
-            bw.setSelectedPieceView(bw.getPieceViewAt(from.x, from.y));
+            previouslyJumped = false;
+            isFirstMove = true;
         }
-        */        
-
-        // If the piece didn't jump or no remaining jumps
-        bw.updateLegalMoves(new ArrayList<>());
-        model.setTurn(model.getTurn().equals("white") ? "black" : "white");
     }
 
     public void saveGame() {
