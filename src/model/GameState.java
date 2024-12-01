@@ -12,6 +12,8 @@ public class GameState implements java.io.Serializable, ControllerObserver {
     private String turn; // "white" or "black"
     private boolean gameOver;
     private String winner; // "white", "black", or "draw"
+    public int whitePieces;
+    public int blackPieces;
 
     public void addObserver(ModelObserver observer) {
         observers.add(observer);
@@ -40,6 +42,7 @@ public class GameState implements java.io.Serializable, ControllerObserver {
             for (int col = 0; col < 8; col++) {
                 if ((row + col) % 2 != 0) {
                     board.setPieceAt(row, col, new Piece(Color.WHITE, false));
+                    whitePieces++;
                 }
             }
         }
@@ -47,6 +50,7 @@ public class GameState implements java.io.Serializable, ControllerObserver {
             for (int col = 0; col < 8; col++) {
                 if ((row + col) % 2 != 0) {
                     board.setPieceAt(row, col, new Piece(Color.BLACK, false));
+                    blackPieces++;
                 }
             }
         }

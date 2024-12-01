@@ -72,32 +72,32 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         ) {
             if(p.isQueen()){
                 List<Point> legalMoves = new ArrayList<>();
-                legalMoves = getLegalMoves(b, p, row, col);
-                if(isFirstMove){                
-                    if(shouldPlayerJump){                
-                        int[] directions = {-1, 1};
-                        for (int dx : directions) {
-                            for (int dy : directions) {
-                                for (int distance = 1; distance < Math.min(b.getRows(), b.getCols()); distance++) {
-                                    int newRow = row + distance * dx;
-                                    int newCol = col + distance * dy;
-                                    try {
-                                        if (b.getPieceAt(newRow, newCol) == null) {
-                                            //Remove moves that aren't jumps
-                                            legalMoves.remove(new Point(newRow, newCol));                                                        
-                                        } else {
-                                            break;
-                                        }
-                                    } catch (ArrayIndexOutOfBoundsException e) {
-                                        break; // Stop if out of bounds
+                legalMoves = getLegalMoves(b, p, row, col);                              
+                if(shouldPlayerJump){                
+                    int[] directions = {-1, 1};
+                    for (int dx : directions) {
+                        for (int dy : directions) {
+                            for (int distance = 1; distance < Math.min(b.getRows(), b.getCols()); distance++) {
+                                int newRow = row + distance * dx;
+                                int newCol = col + distance * dy;
+                                try {
+                                    if (b.getPieceAt(newRow, newCol) == null) {
+                                        //Remove moves that aren't jumps
+                                        legalMoves.remove(new Point(newRow, newCol));                                                        
+                                    } else {
+                                        break;
                                     }
+                                } catch (ArrayIndexOutOfBoundsException e) {
+                                    break; // Stop if out of bounds
                                 }
                             }
                         }
-                    }      
-                } else {
-                    //If not first move, can only jump with bound piece
-                    legalMoves.removeIf(move -> Math.abs(move.x - boundRow) != 2 || Math.abs(move.y - boundCol) != 2);
+                    }
+                }
+                if(previouslyJumped){
+                    if(row != boundRow || col!= boundCol){
+                        legalMoves = new ArrayList<>();
+                    }
                 }
                 bw.updateLegalMoves(legalMoves);            
                 notifyObservers();
@@ -289,6 +289,11 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
                 if (currentPiece != null && !currentPiece.getColor().equals(p.getColor())) {
                     //If current piece is opponent's remove it
                     b.setPieceAt(x, y, null);
+                    if(model.getTurn().equals("white")){
+                        model.blackPieces--;
+                    } else {
+                        model.whitePieces--;
+                    }
                     boundPieceView = bw.getSelectedPieceView();
                     previouslyJumped = true;
                     notifyObservers();
@@ -328,6 +333,13 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             if(legalMoves.isEmpty() || !previouslyJumped){
                 bw.updateLegalMoves(new ArrayList<>());
                 model.setTurn(model.getTurn().equals("white") ? "black" : "white");
+                view.turnLabel.setText(model.getTurn() + "'s turn");
+                System.out.println("White pieces: " + model.whitePieces + " Black pieces: " + model.blackPieces);
+                if(model.whitePieces <= 0){
+                    model.setWinner("black");
+                } else if (model.blackPieces <= 0){
+                    model.setWinner("white");
+                }
                 previouslyJumped = false;
                 isFirstMove = true;
             }            
@@ -336,10 +348,21 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             b.setPieceAt(from.x, from.y, null);
             //Put piece at new position
             b.setPieceAt(to.x, to.y, p);
+            if(
+                p.getColor().equals(Color.WHITE) && to.x == 7 ||
+                p.getColor().equals(Color.BLACK) && to.x == 0
+                ){
+                    p.setQueen(true);
+            }
             bw.updatePieceViewAt(from, to, p);
             //If it's a jump, remove the opponent's piece
-            if(Math.abs(to.x - from.x) == 2 ||Math.abs(to.y - from.y) == 2){
+            if(Math.abs(to.x - from.x) == 2 || Math.abs(to.y - from.y) == 2){
                 b.setPieceAt((to.x + from.x)/2, (to.y + from.y)/2, null);
+                if(model.getTurn().equals("white")){
+                    model.blackPieces--;
+                } else {
+                    model.whitePieces--;
+                }
                 boundPieceView = bw.getSelectedPieceView();    
                 previouslyJumped = true;        
             }
@@ -355,6 +378,13 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             if(legalMoves.isEmpty() || !previouslyJumped){
                 bw.updateLegalMoves(new ArrayList<>());
                 model.setTurn(model.getTurn().equals("white") ? "black" : "white");
+                view.turnLabel.setText(model.getTurn() + "'s turn");
+                System.out.println("White pieces: " + model.whitePieces + " Black pieces: " + model.blackPieces);
+                if(model.whitePieces <= 0){
+                    model.setWinner("black");
+                } else if (model.blackPieces <= 0){
+                    model.setWinner("white");
+                }
                 previouslyJumped = false;
                 isFirstMove = true;
             }

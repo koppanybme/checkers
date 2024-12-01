@@ -1,7 +1,9 @@
 package view;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -9,6 +11,7 @@ import javax.swing.JMenuItem;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
 
 import controller.MenuObserver;
 
@@ -19,6 +22,7 @@ public class GameView extends JFrame implements ModelObserver {
     private List<MenuObserver> observers = new ArrayList<>();
     private JMenu menu;
     private BoardView boardView;
+    public JLabel turnLabel;
 
     @Override
     public void updateView() {
@@ -31,7 +35,7 @@ public class GameView extends JFrame implements ModelObserver {
         this.boardView = boardView;
         setTitle("Checkers Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(800, 800));
+        setMinimumSize(new Dimension(900, 800));
         add(boardView);
         
         // Create the menu bar
@@ -77,6 +81,11 @@ public class GameView extends JFrame implements ModelObserver {
         
         // Set the menu bar to the frame
         setJMenuBar(menuBar);
+
+        // Create a JLabel and add it to the right (east) of the window
+        turnLabel = new JLabel("white's turn");
+        turnLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add some padding
+        add(turnLabel, BorderLayout.EAST);
         
         setVisible(true);
     }
