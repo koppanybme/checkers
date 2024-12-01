@@ -337,9 +337,11 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
                 System.out.println("White pieces: " + model.whitePieces + " Black pieces: " + model.blackPieces);
                 if(model.whitePieces <= 0){
                     model.setWinner("black");
+                    view.turnLabel.setText(model.getWinner() + " won");
                 } else if (model.blackPieces <= 0){
                     model.setWinner("white");
-                }
+                    view.turnLabel.setText(model.getWinner() + " won");
+                }                
                 previouslyJumped = false;
                 isFirstMove = true;
             }            
@@ -382,9 +384,11 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
                 System.out.println("White pieces: " + model.whitePieces + " Black pieces: " + model.blackPieces);
                 if(model.whitePieces <= 0){
                     model.setWinner("black");
+                    view.turnLabel.setText(model.getWinner() + " won");
                 } else if (model.blackPieces <= 0){
                     model.setWinner("white");
-                }
+                    view.turnLabel.setText(model.getWinner() + " won");
+                }            
                 previouslyJumped = false;
                 isFirstMove = true;
             }
@@ -415,6 +419,7 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             }
             view.getBoardView().addObserver(this);
             model.addObserver(view.getBoardView());
+            view.turnLabel.setText(model.getTurn() + "'s turn");
             notifyObservers();
             System.out.println("Game state loaded from gameState.ser");            
         } catch (IOException | ClassNotFoundException e) {

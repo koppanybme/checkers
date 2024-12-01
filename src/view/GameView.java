@@ -35,7 +35,7 @@ public class GameView extends JFrame implements ModelObserver {
         this.boardView = boardView;
         setTitle("Checkers Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(900, 800));
+        setMinimumSize(new Dimension(1000, 800));
         add(boardView);
         
         // Create the menu bar
@@ -84,7 +84,7 @@ public class GameView extends JFrame implements ModelObserver {
 
         // Create a JLabel and add it to the right (east) of the window
         turnLabel = new JLabel("white's turn");
-        turnLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add some padding
+        turnLabel.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30)); // Add some padding
         add(turnLabel, BorderLayout.EAST);
         
         setVisible(true);
