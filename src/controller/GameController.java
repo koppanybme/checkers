@@ -73,6 +73,32 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             if(p.isQueen()){
                 List<Point> legalMoves = new ArrayList<>();
                 legalMoves = getLegalMoves(b, p, row, col);
+                if(isFirstMove){                
+                    if(shouldPlayerJump){                
+                        int[] directions = {-1, 1};
+                        for (int dx : directions) {
+                            for (int dy : directions) {
+                                for (int distance = 1; distance < Math.min(b.getRows(), b.getCols()); distance++) {
+                                    int newRow = row + distance * dx;
+                                    int newCol = col + distance * dy;
+                                    try {
+                                        if (b.getPieceAt(newRow, newCol) == null) {
+                                            //Remove moves that aren't jumps
+                                            legalMoves.remove(new Point(newRow, newCol));                                                        
+                                        } else {
+                                            break;
+                                        }
+                                    } catch (ArrayIndexOutOfBoundsException e) {
+                                        break; // Stop if out of bounds
+                                    }
+                                }
+                            }
+                        }
+                    }      
+                } else {
+                    //If not first move, can only jump with bound piece
+                    legalMoves.removeIf(move -> Math.abs(move.x - boundRow) != 2 || Math.abs(move.y - boundCol) != 2);
+                }
                 bw.updateLegalMoves(legalMoves);            
                 notifyObservers();
             } else {
@@ -110,17 +136,44 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
                     //Check if user's own piece
                     p.getColor().equals(Color.WHITE) && model.getTurn().equals("white") ||
                     p.getColor().equals(Color.BLACK) && model.getTurn().equals("black")
-                ){
-                    List<Point> jumpMoves = getLegalMoves(b, p, i, j);
-                    Iterator<Point> iterator = jumpMoves.iterator();
-                    while (iterator.hasNext()) {
-                        Point point = iterator.next();
-                        if (Math.abs(point.x - i) != 2 || Math.abs(point.y - j) != 2) {
-                            iterator.remove();
+                ){                    
+                    if(p.isQueen()){
+                        List<Point> jumpMoves = getLegalMoves(b, p, i, j);
+                        Iterator<Point> iterator = jumpMoves.iterator();
+                        //Iterate over every legal move
+                        while (iterator.hasNext()) {
+                                //Get the next legal move to check if jump
+                                Point legalMove = iterator.next();
+                                //Calculate direction between p and legalMove                    
+                                int dirX = (legalMove.x - i) / Math.abs(legalMove.x - i);
+                                int dirY = (legalMove.y - j) / Math.abs(legalMove.y - j);
+                                //Current piece's coordinates
+                                int x = i;
+                                int y = j; 
+                                //Iterate over pieces starting from the current piece, ending at the legal move
+                                while (x != legalMove.x && y != legalMove.y) {
+                                    //Check the piece at (x, y)
+                                    Piece iterPiece = b.getPieceAt(x, y);
+                                    if (iterPiece != null && !iterPiece.getColor().equals(p.getColor())) {
+                                        //If current piece is opponent's, then it's a jump
+                                        return true;                                   
+                                    }
+                                    x += dirX;
+                                    y += dirY;
+                                }
+                            }
+                    } else {
+                        List<Point> jumpMoves = getLegalMoves(b, p, i, j);
+                        Iterator<Point> iterator = jumpMoves.iterator();
+                        while (iterator.hasNext()) {
+                                Point legalMove = iterator.next();                        
+                                if (Math.abs(legalMove.x - i) != 2 || Math.abs(legalMove.y - j) != 2) {
+                                    iterator.remove();
+                                }
+                            }                                                         
+                        if(!jumpMoves.isEmpty()){
+                            return true;
                         }
-                    }                
-                    if(!jumpMoves.isEmpty()){
-                        return true;
                     }
                 } else {
                     //If not own piece, skip
@@ -144,19 +197,25 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
                             int newRow = row + distance * dx;
                             int newCol = col + distance * dy;
                             try {
-                                if (b.getPieceAt(newRow, newCol) == null) {
-                                    legalMoves.add(new Point(newRow, newCol));                                
-                                } else if(!b.getPieceAt(newRow, newCol).getColor().equals(p.getColor())) {
-                                    //If piece at new position is opponent's, check if jump is possible
-                                    //Coordinate to jump to
-                                    int jumpRow = newRow + dx;
-                                    int jumpCol = newCol + dy;
-                                    if(b.getPieceAt(jumpRow, jumpCol) == null){
-                                        legalMoves.add(new Point(jumpRow, jumpCol));                                                                                    
+                                if(isFirstMove){
+                                    if (b.getPieceAt(newRow, newCol) == null) {
+                                        legalMoves.add(new Point(newRow, newCol));                                
+                                    } else if(!b.getPieceAt(newRow, newCol).getColor().equals(p.getColor())) {
+                                        //If piece at new position is opponent's, check if jump is possible
+                                        //Coordinate to jump to
+                                        int jumpRow = newRow + dx;
+                                        int jumpCol = newCol + dy;
+                                        if(b.getPieceAt(jumpRow, jumpCol) == null){
+                                            legalMoves.add(new Point(jumpRow, jumpCol));                                                                                    
+                                        }
+                                        break;                                  
+                                    } else {
+                                        break;
                                     }
-                                    break;                                  
                                 } else {
-                                    break;
+                                    if(row != boundRow || col != boundCol){
+                                        legalMoves = new ArrayList<>();
+                                    }
                                 }
                             } catch (ArrayIndexOutOfBoundsException e) {
                                 break; // Stop if out of bounds
@@ -235,10 +294,10 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
                     }
                 } catch (ArrayIndexOutOfBoundsException e) {
                     System.out.println("Can't jump off the board");
-                }                
-                System.out.println("Legal moves: " + legalMoves);
+                }                                
             }
         }
+        System.out.println("Legal moves: " + legalMoves);
         return legalMoves;
     }
 
@@ -260,9 +319,60 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             //Put piece at new position
             b.setPieceAt(to.x, to.y, p);
             bw.updatePieceViewAt(from, to, p);
+            //If it's a jump, remove the opponent's piece
+            int dirX = (to.x - from.x) / Math.abs(to.x - from.x);
+            int dirY = (to.y - from.y) / Math.abs(to.y - from.y);
+            int x = from.x;
+            int y = from.y; 
+            //Iterate over pieces starting from the selected piece, ending at destination
+            while (x != to.x && y != to.y) {
+                //Check the piece at (x, y)
+                Piece currentPiece = b.getPieceAt(x, y);
+                if (currentPiece != null && !currentPiece.getColor().equals(p.getColor())) {
+                    //If current piece is opponent's remove it
+                    b.setPieceAt(x, y, null);
+                    boundPieceView = bw.getSelectedPieceView();
+                    previouslyJumped = true;
+                    notifyObservers();
+                    break;
+                }
+                boundPieceView = bw.getPieceViewAt(to.x, to.y);
+                bw.setSelectedPieceView(boundPieceView);
+                boundRow = to.x;
+                boundCol = to.y;
+                x += dirX;
+                y += dirY;
+            }
             bw.updateLegalMoves(new ArrayList<>());
             notifyObservers();
-            model.setTurn(model.getTurn().equals("white") ? "black" : "white");
+            System.out.println("Piece moved from " + from + " to " + to);
+            List<Point> legalMoves = getLegalMoves(b, p, boundRow, boundCol);
+            int[] directions = {-1,1};
+            for(int dx : directions){
+                for(int dy : directions){
+                    for (int distance = 1; distance < Math.max(b.getRows(), b.getCols()); distance++) {
+                        int newRow = boundRow + distance * dx;
+                        int newCol = boundCol + distance * dy;
+                        try {
+                            if (b.getPieceAt(newRow, newCol) == null) {
+                                //Remove moves that aren't jumps
+                                legalMoves.remove(new Point(newRow, newCol));                                 
+                            } else {
+                                break;
+                            }
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            break; // Stop if out of bounds
+                        }
+                    }
+                }
+            }
+            bw.updateLegalMoves(legalMoves);
+            if(legalMoves.isEmpty() || !previouslyJumped){
+                bw.updateLegalMoves(new ArrayList<>());
+                model.setTurn(model.getTurn().equals("white") ? "black" : "white");
+                previouslyJumped = false;
+                isFirstMove = true;
+            }            
         } else {
             //Remove piece from previous position
             b.setPieceAt(from.x, from.y, null);
