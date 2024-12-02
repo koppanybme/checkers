@@ -276,6 +276,10 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
 
     @Override
     public void onPieceToMove(Point from, Point to) {
+        if(!previouslyJumped && !canPlayerMove()){
+            model.setWinner(model.getTurn().equals("white") ? "black" : "white");
+            view.turnLabel.setText(model.getWinner() + " won");
+        }
         Board b = model.getBoard();
         Piece p = b.getPieceAt(from.x, from.y);
         BoardView bw = view.getBoardView();
