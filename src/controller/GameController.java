@@ -367,13 +367,7 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             //Remove piece from previous position
             b.setPieceAt(from.x, from.y, null);
             //Put piece at new position
-            b.setPieceAt(to.x, to.y, p);
-            if(
-                p.getColor().equals(Color.WHITE) && to.x == 7 ||
-                p.getColor().equals(Color.BLACK) && to.x == 0
-                ){
-                    p.setQueen(true);
-            }
+            b.setPieceAt(to.x, to.y, p);            
             bw.updatePieceViewAt(from, to, p);
             //If it's a jump, remove the opponent's piece
             if(Math.abs(to.x - from.x) == 2 || Math.abs(to.y - from.y) == 2){
@@ -395,6 +389,13 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             List<Point> legalMoves = getLegalMoves(b, p, boundRow, boundCol);
             legalMoves.removeIf(move -> Math.abs(move.x - boundRow) != 2 || Math.abs(move.y - boundCol) != 2);
             bw.updateLegalMoves(legalMoves);
+            if(
+                p.getColor().equals(Color.WHITE) && to.x == 7 ||
+                p.getColor().equals(Color.BLACK) && to.x == 0
+                ){
+                    p.setQueen(true);
+                    notifyObservers();
+            }
             if(legalMoves.isEmpty() || !previouslyJumped){
                 bw.updateLegalMoves(new ArrayList<>());
                 model.setTurn(model.getTurn().equals("white") ? "black" : "white");
