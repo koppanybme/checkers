@@ -1,5 +1,12 @@
 package view;
 
+/**
+ * A ModelObserver interfész, amelyet a modell állapotváltozásainak megfigyelésére használnak.
+ * Az interfészt implementáló osztályok értesítést kapnak, amikor a modell állapota megváltozik.
+ */
 public interface ModelObserver {
-    public void updateView();
+    /**
+     * Értesítés a modell állapotának frissítéséről.
+     */
+    void updateView();
 }

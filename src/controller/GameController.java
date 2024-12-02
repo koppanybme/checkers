@@ -13,6 +13,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 
+/**
+ * A GameController osztály felelős a játék logikájának és az interakcióknak a kezeléséért
+ * a modell (GameState), a nézet (GameView) és a felhasználói bemenetek között. 
+ * Megvalósítja a java.io.Serializable, MenuObserver és PieceObserver interfészeket, 
+ * hogy kezelje a játékállapot sorosítását, a menü műveleteket és a bábu interakciókat.
+ * 
+ * <p>Ez az osztály módszereket biztosít új játék indítására, játékállapotok mentésére és betöltésére,
+ * bábu kattintások és mozgások kezelésére, valamint az állapotváltozásokról való értesítésre.</p>
+ * 
+ * <p>Főbb funkciók:</p>
+ * <ul>
+ *   <li>Új játék indítása a {@link #newGame()} metódussal</li>
+ *   <li>Az aktuális játékállapot mentése a {@link #saveGame()} metódussal</li>
+ *   <li>Korábban mentett játékállapot betöltése a {@link #loadGame()} metódussal</li>
+ *   <li>Bábu kattintások kezelése és legális lépések meghatározása a {@link #onPieceClicked(int, int)} metódussal</li>
+ *   <li>Bábu mozgások kezelése a {@link #onPieceToMove(Point, Point)} metódussal</li>
+ *   <li>Annak ellenőrzése, hogy a játékos tud-e lépni vagy ugrani a {@link #canPlayerMove()} és {@link #canPlayerJump()} metódusokkal</li>
+ *   <li>Legális lépések megszerzése egy bábu számára a {@link #getLegalMoves(Board, Piece, int, int)} metódussal</li>
+ * </ul>
+ * 
+ * <p>A GameController osztály kezeli a körökre osztott logikát, frissíti a nézetet az aktuális 
+ * játékállapottal, és kezeli a játék végi feltételeket.</p>
+ * 
+ * @szerző Debreczeni Koppány Balázs
+ * @verzió 1.0
+ */
+
 public class GameController implements java.io.Serializable, MenuObserver, PieceObserver {
     private List<ControllerObserver> observers = new ArrayList<>();
     private GameView view;
@@ -22,25 +49,51 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
     private int boundRow;
     private int boundCol;
 
+    /**
+     * A fő metódus, amely elindítja a játékot.
+     * Ez a metódus létrehoz egy új GameController példányt és elindít egy új játékot.
+     *
+     * @param args Parancssori argumentumok (nem használt).
+     */
     public static void main(String[] args) {
         GameController controller = new GameController();
         controller.newGame();
     }
 
+    /**
+     * Hozzáad egy megfigyelőt az observer listához.
+     *
+     * @param observer A hozzáadandó megfigyelő.
+     */
     public void addObserver(ControllerObserver observer) {
         observers.add(observer);
     }
 
+    /**
+     * Eltávolít egy megfigyelőt az observer listából.
+     *
+     * @param observer A hozzáadandó megfigyelő.
+     */
     public void removeObserver(ControllerObserver observer) {
         observers.remove(observer);
     }
 
+    /**
+     * Hozzáad egy megfigyelőt az observer listához.
+     *
+     * @param observer A hozzáadandó megfigyelő.
+     */
     public void notifyObservers() {
         for (ControllerObserver observer : observers) {
             observer.update();
         }
     }
     
+    /**
+     * Kezeli a menüelemek kattintásait.
+     *
+     * @param menuItem A kattintott menüelem neve.
+     */
     public void onMenuItemClicked(String menuItem) {
         switch (menuItem) {
             case "Save Game":
@@ -57,6 +110,13 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         }
     }
 
+    /**
+     * Kezeli a bábuk kattintásait.
+     * Ellenőrzi, hogy a játékos tud-e lépni vagy ugrani, és frissíti a nézetet a lehetséges lépésekkel.
+     *
+     * @param row A kattintott sor.
+     * @param col A kattintott oszlop.
+     */
     @Override
     public void onPieceClicked(int row, int col) {
         if(!previouslyJumped && !canPlayerMove()){
@@ -121,6 +181,11 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         }
     }
 
+    /**
+     * Ellenőrzi, hogy a játékos tud-e lépni.
+     *
+     * @return Igaz, ha a játékos tud lépni, egyébként hamis.
+     */
     public boolean canPlayerMove(){
         Board b = model.getBoard();
         //Iterate over every piece
@@ -148,6 +213,11 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         return false;
     }
 
+    /**
+     * Ellenőrzi, hogy a játékos tud-e ugrani.
+     *
+     * @return Igaz, ha a játékos tud ugrani, egyébként hamis.
+     */
     public boolean canPlayerJump(){
         Board b = model.getBoard();
         //Iterate over every piece
@@ -209,6 +279,15 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         return false;
     }
 
+    /**
+     * Meghatározza a bábu számára a legális lépéseket.
+     * 
+     * @param b A játéktábla.
+     * @param p A bábu.
+     * @param row A bábu sor koordinátája.
+     * @param col A bábu oszlop koordinátája.
+     * @return
+     */
     public List<Point> getLegalMoves(Board b, Piece p, int row, int col){
         List<Point> legalMoves = new ArrayList<>();
         if (p != null) {
@@ -278,6 +357,15 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         return legalMoves;
     }
 
+    /**
+     * Kezeli a bábu mozgásokat.
+     * Frissíti a nézetet a bábu új pozíciójával, és eltávolítja az ellenfél bábuit, ha szükséges.
+     * Ellenőrzi, hogy a játékosnak van-e még ugrási lehetősége, és ha nincs, akkor a következő játékosra vált.
+     * Ellenőrzi, hogy a játékos nyert-e, és frissíti a nézetet a győztes játékossal.
+     * 
+     * @param from Az eredeti pozíció.
+     * @param to Az új pozíció.
+     */
     @Override
     public void onPieceToMove(Point from, Point to) {        
         Board b = model.getBoard();
@@ -413,6 +501,9 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         }
     }
 
+    /**
+     * Elmenti a játékállapotot a gameState.ser fájlba.
+     */
     public void saveGame() {
         try (FileOutputStream fileOut = new FileOutputStream("gameState.ser");
              ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
@@ -423,6 +514,9 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         }
     }
 
+    /**
+     * Betölti a játékállapotot a gameState.ser fájlból.
+     */
     public void loadGame() {
         try (FileInputStream fileIn = new FileInputStream("gameState.ser");
              ObjectInputStream in = new ObjectInputStream(fileIn)) {
@@ -445,6 +539,9 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
         }
     }
 
+    /**
+     * Visszaállítja a játékot a kiinduló állapotba.
+     */
     public void newGame() {
         model = new GameState();
         model.initializeBoard();

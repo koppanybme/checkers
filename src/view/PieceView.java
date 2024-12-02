@@ -10,23 +10,46 @@ import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
+/** 
+ * A PieceView osztály egy bábu megjelenítését reprezentálja.
+*/
 public class PieceView extends JButton {
     private Piece piece;
 
+    /**
+     * Létrehoz egy új PieceView példányt a megadott bábuval.
+     *
+     * @param piece A bábu, amelyet megjelenít.
+     */
     public PieceView(Piece piece) {
         this.piece = piece;
         this.setBorderPainted(false);
         this.setContentAreaFilled(false);
     }
 
+    /**
+     * Visszaadja a bábut.
+     *
+     * @return A bábu.
+     */
     public Piece getPiece() {
         return piece;
     }
 
+    /**
+     * Beállítja a bábut.
+     *
+     * @param piece A bábu.
+     */
     public void setPiece(Piece piece) {
         this.piece = piece;
     }
 
+    /**
+     * Kirajzolja a bábut.
+     * 
+     * @param g A rajzoló objektum.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -44,11 +67,21 @@ public class PieceView extends JButton {
         }
     }
 
+    /**
+     * Visszaadja a preferált méretet.
+     *
+     * @return A preferált méret.
+     */
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(50, 50);
     }
 
+    /**
+     * Kirajzolja a bábu keretét.
+     *
+     * @param g A rajzoló objektum.
+     */
     @Override
     protected void paintBorder(Graphics g) {
         if (isSelected()) {

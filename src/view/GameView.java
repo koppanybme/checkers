@@ -18,12 +18,20 @@ import controller.MenuObserver;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A GameView osztály a játék megjelenítéséért felelős.
+ * A játék megjelenítéséhez szükséges elemeket tartalmazza.
+ * Az elemek frissítéséért felelős.
+ */
 public class GameView extends JFrame implements ModelObserver {
     private List<MenuObserver> observers = new ArrayList<>();
     private JMenu menu;
     private BoardView boardView;
     public JLabel turnLabel;
 
+    /**
+     * A játék nézetének frissítéséért felelős metódus.
+     */
     @Override
     public void updateView() {
         System.out.println("View updated");
@@ -31,6 +39,12 @@ public class GameView extends JFrame implements ModelObserver {
         boardView.repaint();
     }
 
+    /**
+     * A játék nézetének konstruktora.
+     * Beállítja a játék nézetének elemeit.
+     * 
+     * @param boardView A tábla nézete.
+     */
     public GameView(BoardView boardView) {
         this.boardView = boardView;
         setTitle("Checkers Game");
@@ -90,24 +104,47 @@ public class GameView extends JFrame implements ModelObserver {
         setVisible(true);
     }
 
+    /**
+     * Hozzáad egy új megfigyelőt az állapotváltozások értesítéséhez.
+     * 
+     * @param observer Az új megfigyelő.
+     */
     public void addObserver(MenuObserver observer) {
         observers.add(observer);
     }
 
+    /**
+     * Eltávolít egy megfigyelőt az állapotváltozások értesítéséből.
+     * 
+     * @param observer Az eltávolítandó megfigyelő.
+     */
     public void removeObserver(MenuObserver observer) {
         observers.remove(observer);
     }
 
+    /**
+     * Értesíti a megfigyelőket a menü állapotváltozásairól.
+     * 
+     * @param menuItem A menüpont, amelyre kattintottak.
+     */
     public void notifyObservers(String menuItem) {
         for (MenuObserver observer : observers) {
             observer.onMenuItemClicked(menuItem);
         }
     }
 
+    /**
+     * Visszaadja a tábla nézetét.
+     * @return
+     */
     public BoardView getBoardView() {
         return boardView;
     }
 
+    /**
+     * Frissíti a tábla nézetét.
+     * @param newBoardView Az új tábla nézete.
+     */
     public void updateBoardView(BoardView newBoardView) {
         remove(this.boardView);
         this.boardView = newBoardView;
