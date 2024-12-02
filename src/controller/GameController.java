@@ -18,7 +18,6 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
     private GameView view;
     private GameState model;
     private boolean previouslyJumped = false;
-    private boolean isFirstMove = true;
     private PieceView boundPieceView;
     private int boundRow;
     private int boundCol;
@@ -104,13 +103,8 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             } else {
                 List<Point> legalMoves = new ArrayList<>();
                 legalMoves = getLegalMoves(b, p, row, col);
-                if(isFirstMove){                
-                    if(shouldPlayerJump){                
-                        legalMoves.removeIf(move -> Math.abs(move.x - row) != 2 || Math.abs(move.y - col) != 2);
-                    }      
-                } else {
-                    //If not first move, can only jump with bound piece
-                    legalMoves.removeIf(move -> Math.abs(move.x - boundRow) != 2 || Math.abs(move.y - boundCol) != 2);
+                if(shouldPlayerJump){                
+                    legalMoves.removeIf(move -> Math.abs(move.x - row) != 2 || Math.abs(move.y - col) != 2);
                 }
                 bw.updateLegalMoves(legalMoves);            
                 notifyObservers();
@@ -121,6 +115,33 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
             notifyObservers();
             return;
         }
+    }
+
+    public boolean canPlayerMove(){
+        Board b = model.getBoard();
+        //Iterate over every piece
+        for(int i = 0; i < b.getRows(); i++){
+            for(int j = 0; j < b.getCols(); j++){
+                Piece p = b.getPieceAt(i, j);
+                if(p == null){
+                    continue;
+                }
+                if(
+                    //Check if user's own piece
+                    p.getColor().equals(Color.WHITE) && model.getTurn().equals("white") ||
+                    p.getColor().equals(Color.BLACK) && model.getTurn().equals("black")
+                ){
+                    List<Point> legalMoves = getLegalMoves(b, p, i, j);
+                    if(!legalMoves.isEmpty()){
+                        return true;
+                    }
+                } else {
+                    //If not own piece, skip
+                    continue;
+                }
+            }
+        }
+        return false;
     }
 
     public boolean canPlayerJump(){
@@ -197,25 +218,19 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
                             int newRow = row + distance * dx;
                             int newCol = col + distance * dy;
                             try {
-                                if(isFirstMove){
-                                    if (b.getPieceAt(newRow, newCol) == null) {
-                                        legalMoves.add(new Point(newRow, newCol));                                
-                                    } else if(!b.getPieceAt(newRow, newCol).getColor().equals(p.getColor())) {
-                                        //If piece at new position is opponent's, check if jump is possible
-                                        //Coordinate to jump to
-                                        int jumpRow = newRow + dx;
-                                        int jumpCol = newCol + dy;
-                                        if(b.getPieceAt(jumpRow, jumpCol) == null){
-                                            legalMoves.add(new Point(jumpRow, jumpCol));                                                                                    
-                                        }
-                                        break;                                  
-                                    } else {
-                                        break;
+                                if (b.getPieceAt(newRow, newCol) == null) {
+                                    legalMoves.add(new Point(newRow, newCol));                                
+                                } else if(!b.getPieceAt(newRow, newCol).getColor().equals(p.getColor())) {
+                                    //If piece at new position is opponent's, check if jump is possible
+                                    //Coordinate to jump to
+                                    int jumpRow = newRow + dx;
+                                    int jumpCol = newCol + dy;
+                                    if(b.getPieceAt(jumpRow, jumpCol) == null){
+                                        legalMoves.add(new Point(jumpRow, jumpCol));                                                                                    
                                     }
+                                    break;                                  
                                 } else {
-                                    if(row != boundRow || col != boundCol){
-                                        legalMoves = new ArrayList<>();
-                                    }
+                                    break;
                                 }
                             } catch (ArrayIndexOutOfBoundsException e) {
                                 break; // Stop if out of bounds
@@ -343,7 +358,6 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
                     view.turnLabel.setText(model.getWinner() + " won");
                 }                
                 previouslyJumped = false;
-                isFirstMove = true;
             }            
         } else {
             //Remove piece from previous position
@@ -390,7 +404,6 @@ public class GameController implements java.io.Serializable, MenuObserver, Piece
                     view.turnLabel.setText(model.getWinner() + " won");
                 }            
                 previouslyJumped = false;
-                isFirstMove = true;
             }
         }
     }
