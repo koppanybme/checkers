@@ -42,8 +42,8 @@ import java.util.Iterator;
 
 public class GameController implements java.io.Serializable, MenuObserver, PieceObserver {
     private List<ControllerObserver> observers = new ArrayList<>();
-    private GameView view;
-    private GameState model;
+    public GameView view;
+    public GameState model;
     private boolean previouslyJumped = false;
     private PieceView boundPieceView;
     private int boundRow;
